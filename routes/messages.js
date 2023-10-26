@@ -28,3 +28,39 @@
  *
  **/
 
+const express = require('express');
+const router = express.Router();
+const Message = require('../models/message');
+const { ensureLoggedIn } = require('../middleware/auth');
+
+// Get detail of a message
+router.get('/:id', ensureLoggedIn, async (req, res, next) => {
+    try {
+        const message = await Message.get(req.params.id);
+        return res.json({ message });
+    } catch (e) {
+        return next(e);
+    }
+});
+
+// Post a message
+router.post('/', ensureLoggedIn, async (req, res, next) => {
+    try {
+        const message = await Message.create(req.body);
+        return res.json({ message });
+    } catch (e) {
+        return next(e);
+    }
+});
+
+// Mark a message as read
+router.post('/:id/read', ensureLoggedIn, async (req, res, next) => {
+    try {
+        const message = await Message.markRead(req.params.id);
+        return res.json({ message });
+    } catch (e) {
+        return next(e);
+    }
+});
+
+module.exports = router;
